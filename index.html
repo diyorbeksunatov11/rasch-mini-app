@@ -1,87 +1,27 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <meta charset="utf-8">
-  <title>Mini RASCH Test</title>
+  <meta charset="UTF-8">
+  <title>RASCH Test</title>
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
-  <style>
-    body { font-family: Arial; padding: 10px; }
-    .question { margin-bottom: 15px; }
-    button { margin-top: 20px; padding: 10px; font-size: 16px; }
-  </style>
 </head>
 <body>
+  <h2>RASCH Test</h2>
+  <p>Test tayyor. Keyingi bosqichda savollar qo‘shiladi.</p>
 
-<h2>Mini RASCH Test</h2>
+  <button onclick="finish()">Yakunlash</button>
 
-<form id="testForm">
-  <div id="questions"></div>
-  <button type="button" onclick="submitTest()">Yakunlash</button>
-</form>
+  <script>
+    const tg = window.Telegram.WebApp;
+    tg.ready();
 
-<script>
-const tg = Telegram.WebApp;
-let answers = []; // 55 elementli javoblar massivi
-
-// Savollarni JSON fayldan yuklash
-fetch("questions.json")
-  .then(res => res.json())
-  .then(data => {
-    const qDiv = document.getElementById("questions");
-    let idx = 0;
-
-    // 35 yopiq savol
-    data.closed.forEach((item, i) => {
-      const div = document.createElement("div");
-      div.className = "question";
-      let html = `<b>${i+1}. ${item.q}</b><br>`;
-      item.options.forEach((opt, j) => {
-        html += `<label>
-                   <input type="radio" name="q${i}" value="${j === item.answer ? 1 : 0}"> ${opt}
-                 </label>`;
-      });
-      div.innerHTML = html;
-      qDiv.appendChild(div);
-      answers.push(0);
-      idx++;
-    });
-
-    // 10 ochiq savol (a+b)
-    data.open.forEach((item, i) => {
-      const div = document.createElement("div");
-      div.className = "question";
-      let html = `<b>${i+36}. ${item.q}</b> `;
-      item.parts.forEach((p, j) => {
-        html += `${p}) <input type="text" name="q${i+36}${p}" size="5"> `;
-        answers.push(0);
-      });
-      div.innerHTML = html;
-      qDiv.appendChild(div);
-    });
-  });
-
-// Test yuborish
-function submitTest(){
-  // 35 yopiq
-  for(let i=0; i<35; i++){
-    const radios = document.getElementsByName(`q${i}`);
-    for(const r of radios){
-      if(r.checked) answers[i] = parseInt(r.value);
+    function finish() {
+      tg.sendData(JSON.stringify({
+        correct: 40,
+        total: 55
+      }));
+      tg.close();
     }
-  }
-
-  // 10 ochiq (a+b)
-  for(let i=0; i<10; i++){
-    ["a","b"].forEach((p,j)=>{
-      const val = document.querySelector(`input[name=q${i+36}${p}]`).value.trim();
-      answers[35 + i*2 + j] = val ? 1 : 0;
-    });
-  }
-
-  tg.sendData(JSON.stringify({answers}));
-  tg.close();
-}
-</script>
-
+  </script>
 </body>
 </html>
