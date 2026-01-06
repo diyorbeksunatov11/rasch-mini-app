@@ -1,0 +1,12 @@
+{
+  "closed": [
+    {"q": "1-savol?", "options": ["A", "B", "C", "D"], "answer": 0},
+    {"q": "2-savol?", "options": ["A", "B", "C", "D"], "answer": 0}
+    // shu tarzda 35 ta yopiq savol
+  ],
+  "open": [
+    {"q": "36-savol?", "parts": ["a", "b"]},
+    {"q": "37-savol?", "parts": ["a", "b"]}
+    // shu tarzda 10 ta ochiq savol
+  ]
+}
