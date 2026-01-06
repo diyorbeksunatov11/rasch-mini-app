@@ -1,27 +1,60 @@
-<!DOCTYPE html>
-<html>
-<head>
-  <meta charset="UTF-8">
-  <title>RASCH Test</title>
-  <script src="https://telegram.org/js/telegram-web-app.js"></script>
-</head>
 <body>
-  <h2>RASCH Test</h2>
-  <p>Test tayyor. Keyingi bosqichda savollar qo‘shiladi.</p>
+<h3 id="qText"></h3>
+<div id="answers"></div>
+<button onclick="next()">Keyingi</button>
 
-  <button onclick="finish()">Yakunlash</button>
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<script>
+const tg = window.Telegram.WebApp;
+tg.ready();
 
-  <script>
-    const tg = window.Telegram.WebApp;
-    tg.ready();
+let index = 0;
+let userAnswers = [];
 
-    function finish() {
-      tg.sendData(JSON.stringify({
-        correct: 40,
-        total: 55
-      }));
-      tg.close();
-    }
-  </script>
+function loadQuestion() {
+  const q = questions[index];
+  document.getElementById("qText").innerText = q.id + ". " + q.text;
+  const box = document.getElementById("answers");
+  box.innerHTML = "";
+
+  if (q.type === "closed") {
+    q.options.forEach((opt, i) => {
+      const btn = document.createElement("button");
+      btn.innerText = String.fromCharCode(65+i) + ") " + opt;
+      btn.onclick = () => select(String.fromCharCode(65+i));
+      box.appendChild(btn);
+    });
+  } else {
+    const input = document.createElement("input");
+    input.placeholder = "Javobingiz...";
+    input.onchange = e => select(e.target.value);
+    box.appendChild(input);
+  }
+}
+
+function select(answer) {
+  userAnswers[index] = answer;
+}
+
+function next() {
+  if (!userAnswers[index]) {
+    alert("Javob tanlang!");
+    return;
+  }
+
+  index++;
+  if (index < questions.length) {
+    loadQuestion();
+  } else {
+    finish();
+  }
+}
+
+function finish() {
+  tg.sendData(JSON.stringify(userAnswers));
+  tg.close();
+}
+
+loadQuestion();
+</script>
 </body>
-</html>
